@@ -1,9 +1,6 @@
 import type { PageServerLoad } from './$types';
 import { sites } from '$lib/server/db/schema';
-import { drizzle } from 'drizzle-orm/libsql';
-import { DATABASE_URL } from '$env/static/private';
-
-const db = drizzle(DATABASE_URL);
+import { db } from '$lib/server/db';
 
 const animalEmojis = [
 	// Mammals

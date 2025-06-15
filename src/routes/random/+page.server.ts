@@ -1,10 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { sites } from '$lib/server/db/schema';
-import { drizzle } from 'drizzle-orm/libsql';
-import { DATABASE_URL, REDIRECT_LINK } from '$env/static/private';
+import { db } from '$lib/server/db';
+import { REDIRECT_LINK } from '$env/static/private';
 import { redirect } from '@sveltejs/kit';
-
-const db = drizzle(DATABASE_URL);
 
 export const load: PageServerLoad = async () => {
 	// get all sites

@@ -1,11 +1,9 @@
 import type { PageServerLoad } from './$types';
 import { sites } from '$lib/server/db/schema';
-import { drizzle } from 'drizzle-orm/libsql';
-import { DATABASE_URL, REDIRECT_LINK } from '$env/static/private';
+import { db } from '$lib/server/db';
+import { REDIRECT_LINK } from '$env/static/private';
 import { count, eq } from 'drizzle-orm';
 import { redirect } from '@sveltejs/kit';
-
-const db = drizzle(DATABASE_URL);
 
 export const load: PageServerLoad = async ({ url }) => {
 	const currentSite = url.searchParams.get('site');
@@ -27,6 +25,12 @@ export const load: PageServerLoad = async ({ url }) => {
 		.select({ order: sites.order })
 		.from(sites)
 		.where(eq(sites.link, currentSite));
+
+	// no sites found w/ that url
+	if (siteOrderObj.length === 0) {
+		redirect(307, REDIRECT_LINK);
+	}
+
 	const siteOrder = siteOrderObj[0].order;
 
 	if (siteOrder == null || siteOrder < 0) {
