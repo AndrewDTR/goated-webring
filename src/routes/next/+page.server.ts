@@ -6,7 +6,8 @@ import { count, eq } from 'drizzle-orm';
 import { redirect } from '@sveltejs/kit';
 
 export const load: PageServerLoad = async ({ url }) => {
-	const currentSite = url.searchParams.get('site');
+	// remove trailing slash
+	const currentSite = url.searchParams.get('site')?.replace(/\/$/, '');
 
 	if (currentSite == null) {
 		redirect(307, REDIRECT_LINK);
@@ -50,6 +51,5 @@ export const load: PageServerLoad = async ({ url }) => {
 			.where(eq(sites.order, siteOrder + 1));
 	}
 
-	console.log(redirectSite);
 	redirect(307, redirectSite[0].site);
 };
