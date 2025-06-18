@@ -52,6 +52,5 @@ export const load: PageServerLoad = async ({ url }) => {
 			.where(eq(sites.order, siteOrder - 1));
 	}
 
-	console.log(redirectSite);
 	redirect(307, redirectSite[0].site);
 };
