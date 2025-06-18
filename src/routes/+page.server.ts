@@ -1,121 +1,26 @@
 import type { PageServerLoad } from './$types';
 import { sites } from '$lib/server/db/schema';
 import { db } from '$lib/server/db';
+import { PUBLIC_SHOW_LANDING_PAGE } from '$env/static/public';
+import { REDIRECT_LINK } from '$env/static/private';
+import { redirect } from '@sveltejs/kit';
 
-const animalEmojis = [
-	// Mammals
-	'🐒',
-	'🦍',
-	'🦧',
-	'🐕',
-	'🦮',
-	'🐕‍🦺',
-	'🐩',
-	'🐺',
-	'🦊',
-	'🦝',
-	'🐈',
-	'🦁',
-	'🐅',
-	'🐆',
-	'🐴',
-	'🐎',
-	'🦓',
-	'🦌',
-	'🐂',
-	'🐃',
-	'🐄',
-	'🐖',
-	'🐗',
-	'🐏',
-	'🐑',
-	'🐐',
-	'🐪',
-	'🐫',
-	'🦙',
-	'🦒',
-	'🐘',
-	'🦏',
-	'🦛',
-	'🐁',
-	'🐀',
-	'🐹',
-	'🐇',
-	'🐿️',
-	'🦔',
-	'🦇',
-	'🐻',
-	'🐨',
-	'🐼',
-	'🦥',
-	'🦦',
-	'🦨',
-	'🦘',
-	'🦡',
+export const load: PageServerLoad = async ({ url }) => {
+	let redirectParse = new URL(REDIRECT_LINK);
+	let sameLinkError = false;
 
-	// Birds
-	'🦃',
-	'🐔',
-	'🐓',
-	'🐣',
-	'🐤',
-	'🐥',
-	'🐦',
-	'🐧',
-	'🕊️',
-	'🦅',
-	'🦆',
-	'🦢',
-	'🦉',
-	'🦩',
-	'🦜',
-
-	// Marine & Reptiles
-	'🐸',
-	'🐊',
-	'🐢',
-	'🦎',
-	'🐍',
-	'🐳',
-	'🐋',
-	'🐬',
-	'🐟',
-	'🐠',
-	'🐡',
-	'🦈',
-	'🐙',
-	'🦀',
-	'🦞',
-	'🦑',
-
-	// Bugs
-	'🐌',
-	'🦋',
-	'🐛',
-	'🐜',
-	'🐝',
-	'🐞'
-];
-
-// https://stackoverflow.com/a/19270021
-function getRandom(arr: string[], n: number) {
-	var result = new Array(n),
-		len = arr.length,
-		taken = new Array(len);
-	if (n > len) throw new RangeError('getRandom: more elements taken than available');
-	while (n--) {
-		var x = Math.floor(Math.random() * len);
-		result[n] = arr[x in taken ? taken[x] : x];
-		taken[x] = --len in taken ? taken[len] : len;
+	// try and prevent a situation where people have the index page redirecting
+	// to itself, while the page isn't rendering anything (infinite loop)
+	if (url.host === redirectParse.host) {
+		sameLinkError = true;
+	} else if (PUBLIC_SHOW_LANDING_PAGE === 'false') {
+		redirect(307, REDIRECT_LINK);
 	}
-	return result;
-}
 
-export const load: PageServerLoad = async () => {
 	const siteList = await db.select({ site: sites.link }).from(sites).orderBy(sites.order);
 
 	return {
 		sites: siteList,
-		emojis: getRandom(animalEmojis, siteList.length)
+		sameLinkError: sameLinkError
 	};
 };
