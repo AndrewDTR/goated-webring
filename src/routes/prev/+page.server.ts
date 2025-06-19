@@ -1,22 +1,25 @@
 import type { PageServerLoad } from './$types';
 import { sites } from '$lib/server/db/schema';
 import { db } from '$lib/server/db';
-import { REDIRECT_LINK } from '$env/static/private';
 import { count, eq } from 'drizzle-orm';
 import { redirect } from '@sveltejs/kit';
+import getSetting from '$lib/getSetting';
 
 export const load: PageServerLoad = async ({ url }) => {
+	// get redirect link from settings
+	const REDIRECT_LINK = await getSetting('REDIRECT_LINK');
+
 	// remove trailing slash
 	const currentSite = url.searchParams.get('site')?.replace(/\/$/, '');
 
 	if (currentSite == null) {
-		redirect(307, REDIRECT_LINK);
+		redirect(302, REDIRECT_LINK);
 	}
 
 	try {
 		new URL(currentSite ?? '');
 	} catch {
-		redirect(307, REDIRECT_LINK);
+		redirect(302, REDIRECT_LINK);
 	}
 
 	// get number of sites
@@ -29,13 +32,13 @@ export const load: PageServerLoad = async ({ url }) => {
 
 	// no sites found w/ that url
 	if (siteOrderObj.length === 0) {
-		redirect(307, REDIRECT_LINK);
+		redirect(302, REDIRECT_LINK);
 	}
 
 	const siteOrder = siteOrderObj[0].order;
 
 	if (numSites == null || siteOrder == null || siteOrder < 0) {
-		redirect(307, REDIRECT_LINK);
+		redirect(302, REDIRECT_LINK);
 	}
 
 	let redirectSite: { site: string }[];
@@ -53,5 +56,5 @@ export const load: PageServerLoad = async ({ url }) => {
 			.where(eq(sites.order, siteOrder - 1));
 	}
 
-	redirect(307, redirectSite[0].site);
+	redirect(302, redirectSite[0].site);
 };

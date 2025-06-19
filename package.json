@@ -22,6 +22,7 @@
 		"@sveltejs/adapter-auto": "^6.0.0",
 		"@sveltejs/kit": "^2.16.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
+		"@tailwindcss/forms": "^0.5.10",
 		"@tailwindcss/typography": "^0.5.15",
 		"@tailwindcss/vite": "^4.0.0",
 		"@types/better-sqlite3": "^7.6.12",
@@ -44,6 +45,7 @@
 	"dependencies": {
 		"@libsql/client": "^0.15.9",
 		"better-sqlite3": "^11.8.0",
-		"drizzle-orm": "^0.40.1"
+		"drizzle-orm": "^0.40.1",
+		"svelte-french-toast": "^2.0.0-alpha.0"
 	}
 }

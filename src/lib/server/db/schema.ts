@@ -17,3 +17,8 @@ export const invites = sqliteTable('invites', {
 	code: text('code').unique().notNull(),
 	expiresAt: integer('expires_at').notNull()
 });
+
+export const settings = sqliteTable('settings', {
+	setting: text('setting').unique().primaryKey().notNull(),
+	value: text('value').notNull()
+});
