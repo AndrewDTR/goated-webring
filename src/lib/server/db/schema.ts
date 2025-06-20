@@ -15,7 +15,8 @@ export const users = sqliteTable('users', {
 export const invites = sqliteTable('invites', {
 	id: integer('id').unique().primaryKey().notNull(),
 	code: text('code').unique().notNull(),
-	expiresAt: integer('expires_at').notNull()
+	expiresAt: integer('expires_at').notNull(),
+	uses: integer('uses').notNull()
 });
 
 export const settings = sqliteTable('settings', {

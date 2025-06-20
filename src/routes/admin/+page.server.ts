@@ -1,12 +1,13 @@
 import type { PageServerLoad } from './$types';
-import { sites, settings } from '$lib/server/db/schema';
+import { sites, settings, invites } from '$lib/server/db/schema';
 import { db } from '$lib/server/db';
 import type { Actions } from './$types';
 import getSetting from '$lib/getSetting';
 import { eq } from 'drizzle-orm';
+import createInvite from '$lib/createInvite';
 
 export const actions = {
-	default: async ({ request, url }) => {
+	settings: async ({ request, url }) => {
 		const data = await request.formData();
 		let redirectValue = data.get('redirectLink');
 		let showLandingPage = data.get('showLandingPage');
@@ -48,12 +49,23 @@ export const actions = {
 			]);
 		} catch (error) {
 			return {
+				type: 'settings',
 				success: 'false',
 				error: `Unexpected error: ${error}`
 			};
 		}
 
-		return { success: 'true' };
+		return { type: 'settings', success: 'true' };
+	},
+
+	invite: async ({ request, url }) => {
+		const data = await request.formData();
+		const time = data.get('duration');
+		const useTemp = data.get('uses');
+		const uses = useTemp !== null ? parseInt(useTemp as string, 10) : undefined;
+
+		const code = await createInvite(time, uses);
+		return { type: 'invite', code: `${url.host}/invite/${code[0].code}`, success: 'true' };
 	}
 } satisfies Actions;
 
@@ -66,9 +78,11 @@ export const load: PageServerLoad = async () => {
 	]);
 
 	const siteList = await db.select({ site: sites.link }).from(sites).orderBy(sites.order);
+	const inviteList = await db.select().from(invites).orderBy(invites.expiresAt);
 
 	return {
 		sites: siteList,
+		invites: inviteList,
 		settings: {
 			redirectLink: REDIRECT_LINK,
 			webringName: WEBRING_NAME,
