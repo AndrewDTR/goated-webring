@@ -4,7 +4,7 @@ import { db } from '$lib/server/db';
 import { redirect } from '@sveltejs/kit';
 import getSetting from '$lib/getSetting';
 
-export const load: PageServerLoad = async ({ url }) => {
+export const load: PageServerLoad = async () => {
 	// get redirect link from settings
 	const REDIRECT_LINK = await getSetting('REDIRECT_LINK');
 	const SHOW_LANDING_PAGE = await getSetting('SHOW_LANDING_PAGE');

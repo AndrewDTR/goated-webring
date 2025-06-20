@@ -16,7 +16,7 @@ export const actions = {
 		else if (typeof showLandingPage !== 'string') showLandingPage = String(showLandingPage);
 		if (redirectValue === null) redirectValue = '';
 		else if (typeof redirectValue !== 'string') redirectValue = String(redirectValue);
-		let redirectParse = new URL(typeof redirectValue === 'string' ? redirectValue : '');
+		const redirectParse = new URL(typeof redirectValue === 'string' ? redirectValue : '');
 
 		if (url.host === redirectParse.host && showLandingPage === 'false') {
 			return {
@@ -60,12 +60,17 @@ export const actions = {
 
 	invite: async ({ request, url }) => {
 		const data = await request.formData();
-		const time = data.get('duration');
+		const timeEntry = data.get('duration');
+		const time = (
+			typeof timeEntry === 'string' ? timeEntry : 'forever'
+		) as import('$lib/createInvite').DurationOption;
 		const useTemp = data.get('uses');
-		const uses = useTemp !== null ? parseInt(useTemp as string, 10) : undefined;
+		const uses = (
+			useTemp !== null ? parseInt(useTemp as string, 10) : 0
+		) as import('$lib/createInvite').UsesOption; // Cast to UsesOption
 
 		const code = await createInvite(time, uses);
-		return { type: 'invite', code: `${url.host}/invite/${code[0].code}`, success: 'true' };
+		return { type: 'invite', code: `${url.host}/links/${code[0].code}`, success: 'true' };
 	}
 } satisfies Actions;
 

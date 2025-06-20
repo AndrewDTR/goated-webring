@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
-	let { data, form } = $props();
+	type FormType = {
+		success?: string;
+		error?: string;
+		type?: string;
+		code?: string;
+	};
+	let { data, form }: { data: any; form: FormType } = $props();
 	import toast, { Toaster } from 'svelte-french-toast';
 
 	const isSuccess = $derived(form?.success === 'true');

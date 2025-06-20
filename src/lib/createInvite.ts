@@ -1,8 +1,8 @@
 import { invites } from '$lib/server/db/schema';
 import { db } from '$lib/server/db';
 
-type DurationOption = '30m' | '1h' | '6h' | '12h' | '1d' | '7d' | 'forever';
-type UsesOption = 1 | -1;
+export type DurationOption = '30m' | '1h' | '6h' | '12h' | '1d' | '7d' | 'forever';
+export type UsesOption = 1 | -1;
 
 function generateInviteCode() {
 	const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
