@@ -70,7 +70,7 @@ export const actions = {
 		) as import('$lib/createInvite').UsesOption; // Cast to UsesOption
 
 		const code = await createInvite(time, uses);
-		return { type: 'invite', code: `${url.host}/links/${code[0].code}`, success: 'true' };
+		return { type: 'invite', code: `${url.host}/invite/${code[0].code}`, success: 'true' };
 	}
 } satisfies Actions;
 
@@ -82,7 +82,7 @@ export const load: PageServerLoad = async () => {
 		getSetting('SHOW_LANDING_PAGE')
 	]);
 
-	const siteList = await db.select({ site: sites.link }).from(sites).orderBy(sites.order);
+	const siteList = await db.select({ site: sites.link, order: sites.order, id: sites.id }).from(sites).orderBy(sites.order);
 	const inviteList = await db.select().from(invites).orderBy(invites.expiresAt);
 
 	return {

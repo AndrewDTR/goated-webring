@@ -13,6 +13,8 @@
 	const isSuccess = $derived(form?.success === 'true');
 	const errorMsg = $derived(form?.success === 'false' ? form.error : null);
 
+	let busy = $state(false);
+
 	$effect(() => {
 		async function handleEffect() {
 			if (form?.type === 'settings') {
@@ -43,12 +45,33 @@
 		}
 	}
 
-	async function deleteHelper(id: number) {
+	async function deleteHelper(id: number, type: string) {
 		await fetch('/admin/delete', {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ id })
+			body: JSON.stringify({ id, type })
 		});
+		await invalidateAll();
+	}
+
+	async function moveSite(dir: string, id: number) {
+		if (busy) return;
+
+		busy = true;
+		if (dir === 'up') {
+			await fetch('/admin/up', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ id })
+			});
+		} else if (dir === 'down') {
+			await fetch('/admin/down', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ id })
+			});
+		}
+		busy = false;
 		await invalidateAll();
 	}
 </script>
@@ -145,6 +168,68 @@
 				>
 			</form>
 
+			<p class="mt-4 text-2xl underline">Site List</p>
+
+			<table class="mt-4 w-full table-auto border-collapse">
+				<thead>
+					<tr class="bg-gray-800 text-white">
+						<th class="px-4 py-2 text-left">Reorder</th>
+						<th class="px-4 py-2 text-left">Site</th>
+						<th class="px-4 py-2 text-left">Order</th>
+						<th class="px-4 py-2 text-left"></th>
+					</tr>
+				</thead>
+				<tbody>
+					{#if data.sites.length == 0}
+						<tr class="transition-colors odd:bg-gray-600 even:bg-gray-500">
+							<td class="px-4 py-2">...</td>
+							<td class="px-4 py-2">No Invites</td>
+							<td class="px-4 py-2">...</td>
+							<td class="px-4 py-2"></td>
+						</tr>
+					{:else}
+						{#each data.sites as site (site.order)}
+							<tr class="transition-colors odd:bg-gray-600 even:bg-gray-500">
+								<td class="px-4 py-2">
+									<button
+										disabled={busy || site.order == data.sites.length - 1}
+										class="hover:bg-blue-80 mr-2 cursor-pointer bg-blue-600 p-1"
+										class:invisible={site.order == data.sites.length - 1}
+										onclick={async () => {
+											if (site.order != data.sites.length - 1) {
+												await moveSite('down', site.id);
+											}
+										}}
+									>
+										🔽
+									</button>
+									<button
+										disabled={busy || site.order == 0}
+										class="cursor-pointer bg-blue-600 p-1 hover:bg-blue-800"
+										class:invisible={site.order == 0}
+										onclick={async () => {
+											if (site.order != 0) {
+												await moveSite('up', site.id);
+											}
+										}}
+									>
+										🔼
+									</button>
+								</td>
+								<td class="px-4 py-2">{site.site}</td>
+								<td class="px-4 py-2">{site.order + 1}</td>
+								<td class="px-4 py-2"
+									><button
+										class="cursor-pointer font-bold underline transition-colors duration-75 hover:text-red-400"
+										onclick={async () => await deleteHelper(site.id, 'site')}>Delete</button
+									></td
+								>
+							</tr>
+						{/each}
+					{/if}
+				</tbody>
+			</table>
+
 			<p class="mt-4 text-2xl underline">Invites</p>
 
 			<table class="mt-4 w-full table-auto border-collapse">
@@ -174,7 +259,7 @@
 								<td class="px-4 py-2"
 									><button
 										class="cursor-pointer font-bold underline transition-colors duration-75 hover:text-red-400"
-										onclick={async () => await deleteHelper(invite.id)}>Delete</button
+										onclick={async () => await deleteHelper(invite.id, 'invite')}>Delete</button
 									></td
 								>
 							</tr>

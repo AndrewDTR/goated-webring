@@ -8,9 +8,14 @@ import getSetting from '$lib/getSetting';
 export const actions = {
 	default: async ({ request, url, params }) => {
 		const data = await request.formData();
-		const link = data.get('siteURL');
+		let link = data.get('siteURL');
 
-		// TODO VALIDATE THE URL!
+		// strip trailing slash if it exists
+		if (typeof link === 'string' && link.endsWith('/')) {
+			link = link.slice(0, -1);
+		}
+
+		// TODO more validation
 
 		if (typeof link !== 'string') {
 			return {
