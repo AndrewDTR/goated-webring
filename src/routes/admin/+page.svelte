@@ -193,11 +193,11 @@
 							<tr class="transition-colors odd:bg-gray-600 even:bg-gray-500">
 								<td class="px-4 py-2">
 									<button
-										disabled={busy || site.order == data.sites.length - 1}
+										disabled={busy || index == data.sites.length - 1}
 										class="hover:bg-blue-80 mr-2 cursor-pointer bg-blue-600 p-1"
-										class:invisible={site.order == data.sites.length - 1}
+										class:invisible={index == data.sites.length - 1}
 										onclick={async () => {
-											if (site.order != data.sites.length - 1) {
+											if (index != data.sites.length - 1) {
 												await moveSite('down', site.id);
 											}
 										}}
@@ -205,11 +205,11 @@
 										🔽
 									</button>
 									<button
-										disabled={busy || site.order == 0}
+										disabled={busy || index == 0}
 										class="cursor-pointer bg-blue-600 p-1 hover:bg-blue-800"
-										class:invisible={site.order == 0}
+										class:invisible={index == 0}
 										onclick={async () => {
-											if (site.order != 0) {
+											if (index != 0) {
 												await moveSite('up', site.id);
 											}
 										}}

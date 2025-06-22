@@ -19,10 +19,11 @@ export default async function addSite(siteURL: string) {
 
 	const [{ highestOrder }] = await db.select({ highestOrder: max(sites.order) }).from(sites);
 
-	if (!highestOrder) {
-		// fail
-		return;
+	if (highestOrder === null || highestOrder === undefined) {
+		// no sites exist, start with order 0
+		await db.insert(sites).values({ link: siteURL, order: 0 });
+	} else {
+		// add new site with order one higher than the current highest
+		await db.insert(sites).values({ link: siteURL, order: highestOrder + 1 });
 	}
-
-	await db.insert(sites).values({ link: siteURL, order: highestOrder + 1 });
 }

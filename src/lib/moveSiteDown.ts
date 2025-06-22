@@ -18,7 +18,7 @@ export default async function moveSiteDown(siteID: number) {
 		.from(sites)
 		.where(gt(sites.order, siteToMove.order));
 
-	if (!nextSiteOrder) {
+	if (nextSiteOrder === null || nextSiteOrder === undefined) {
 		// todo handle
 		return;
 	}
