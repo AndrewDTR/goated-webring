@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { invalidateAll } from '$app/navigation';
+	import DeleteButton from '$lib/DeleteButton.svelte';
 	type FormType = {
 		success?: string;
 		error?: string;
@@ -188,7 +189,7 @@
 							<td class="px-4 py-2"></td>
 						</tr>
 					{:else}
-						{#each data.sites as site (site.order)}
+						{#each data.sites as site, index (site.id)}
 							<tr class="transition-colors odd:bg-gray-600 even:bg-gray-500">
 								<td class="px-4 py-2">
 									<button
@@ -217,18 +218,37 @@
 									</button>
 								</td>
 								<td class="px-4 py-2">{site.site}</td>
-								<td class="px-4 py-2">{site.order + 1}</td>
+								<td class="px-4 py-2">{index + 1}</td>
 								<td class="px-4 py-2"
-									><button
-										class="cursor-pointer font-bold underline transition-colors duration-75 hover:text-red-400"
-										onclick={async () => await deleteHelper(site.id, 'site')}>Delete</button
-									></td
+									><DeleteButton func={async () => await deleteHelper(site.id, 'site')} /></td
 								>
 							</tr>
 						{/each}
 					{/if}
 				</tbody>
 			</table>
+
+			<p class="mt-4 text-xl underline">Add A Site</p>
+
+			<form
+				method="POST"
+				action="?/addSite"
+				use:enhance={() => {
+					return ({ update }) => {
+						update();
+					};
+				}}
+			>
+
+				<span class="mt-2 mb-2 block font-bold">Site URL</span>
+
+				<label>
+					<input class="block w-xl text-black" type="url" name="site" required />
+				</label>
+				<button class="mt-4 block cursor-pointer bg-blue-500 p-4 transition-colors duration-75"
+					>Create</button
+				>
+			</form>
 
 			<p class="mt-4 text-2xl underline">Invites</p>
 
@@ -248,7 +268,7 @@
 							<td class="px-4 py-2"></td>
 						</tr>
 					{:else}
-						{#each data.invites as invite}
+						{#each data.invites as invite (invite.id)}
 							<tr class="transition-colors odd:bg-gray-600 even:bg-gray-500">
 								<td class="px-4 py-2">{invite.code}</td>
 								{#if invite.expiresAt === -1}
@@ -256,12 +276,13 @@
 								{:else}
 									<td class="px-4 py-2">{new Date(invite.expiresAt).toLocaleString()}</td>
 								{/if}
-								<td class="px-4 py-2"
-									><button
+								<!-- <button
 										class="cursor-pointer font-bold underline transition-colors duration-75 hover:text-red-400"
 										onclick={async () => await deleteHelper(invite.id, 'invite')}>Delete</button
-									></td
-								>
+									> -->
+								<td class="px-4 py-2"
+									><DeleteButton func={async () => await deleteHelper(invite.id, 'invite')} />
+								</td>
 							</tr>
 						{/each}
 					{/if}

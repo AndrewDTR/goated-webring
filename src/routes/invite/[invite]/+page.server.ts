@@ -4,6 +4,7 @@ import { db } from '$lib/server/db';
 import { count, eq } from 'drizzle-orm';
 import { error, redirect } from '@sveltejs/kit';
 import getSetting from '$lib/getSetting';
+import pruneInvites from '$lib/pruneInvites';
 
 export const actions = {
 	default: async ({ request, url, params }) => {
@@ -45,6 +46,9 @@ export const actions = {
 };
 
 export const load: PageServerLoad = async ({ params }) => {
+	// first prune
+	await pruneInvites();
+
 	// check if the invite *exists*, can do other checks when it's attempted to be written to
 	const inviteList = await db.select().from(invites).where(eq(invites.code, params.invite));
 	const WEBRING_NAME = await getSetting('WEBRING_NAME');

@@ -1,6 +1,6 @@
 import { sites } from '$lib/server/db/schema';
 import { db } from '$lib/server/db';
-import { eq } from 'drizzle-orm';
+import { eq, gt, min } from 'drizzle-orm';
 
 export default async function moveSiteDown(siteID: number) {
 	const [siteToMove] = await db
@@ -12,14 +12,19 @@ export default async function moveSiteDown(siteID: number) {
 		throw new Error('Site not found');
 	}
 
-	const [nextSite] = await db
-		.select({ id: sites.id, order: sites.order })
+	// find the next highest site
+	const [{ nextSiteOrder }] = await db
+		.select({ nextSiteOrder: min(sites.order) })
 		.from(sites)
-		.where(eq(sites.order, siteToMove.order + 1));
+		.where(gt(sites.order, siteToMove.order));
 
-	if (!nextSite) {
-		throw new Error('Site is already at the bottom');
+	if (!nextSiteOrder) {
+		// todo handle
+		return;
 	}
+
+	const [nextSite] = await db.select().from(sites).where(eq(sites.order, nextSiteOrder))
+
 	await db.batch([
 		db.update(sites).set({ order: -1 }).where(eq(sites.id, siteToMove.id)),
 

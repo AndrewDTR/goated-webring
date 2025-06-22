@@ -5,8 +5,21 @@ import type { Actions } from './$types';
 import getSetting from '$lib/getSetting';
 import { eq } from 'drizzle-orm';
 import createInvite from '$lib/createInvite';
+import pruneInvites from '$lib/pruneInvites';
+import addSite from '$lib/addSite';
 
 export const actions = {
+	addSite: async ({request}) => {
+		const data = await request.formData();
+		const siteToAdd = String(data.get('site'));
+
+		// todo validate
+		if (!siteToAdd) {
+			return;
+		}
+
+		await addSite(siteToAdd);
+	},
 	settings: async ({ request, url }) => {
 		const data = await request.formData();
 		let redirectValue = data.get('redirectLink');
@@ -75,15 +88,20 @@ export const actions = {
 } satisfies Actions;
 
 export const load: PageServerLoad = async () => {
-	const [REDIRECT_LINK, WEBRING_NAME, HIDE_WORDMARK, SHOW_LANDING_PAGE] = await Promise.all([
-		getSetting('REDIRECT_LINK'),
-		getSetting('WEBRING_NAME'),
-		getSetting('HIDE_WORDMARK'),
-		getSetting('SHOW_LANDING_PAGE')
-	]);
+	await pruneInvites();
 
-	const siteList = await db.select({ site: sites.link, order: sites.order, id: sites.id }).from(sites).orderBy(sites.order);
-	const inviteList = await db.select().from(invites).orderBy(invites.expiresAt);
+	const [REDIRECT_LINK, WEBRING_NAME, HIDE_WORDMARK, SHOW_LANDING_PAGE, siteList, inviteList] =
+		await Promise.all([
+			getSetting('REDIRECT_LINK'),
+			getSetting('WEBRING_NAME'),
+			getSetting('HIDE_WORDMARK'),
+			getSetting('SHOW_LANDING_PAGE'),
+			db
+				.select({ site: sites.link, order: sites.order, id: sites.id })
+				.from(sites)
+				.orderBy(sites.order),
+			db.select().from(invites).orderBy(invites.expiresAt)
+		]);
 
 	return {
 		sites: siteList,
