@@ -5,6 +5,7 @@ import { count, eq } from 'drizzle-orm';
 import { error, redirect } from '@sveltejs/kit';
 import getSetting from '$lib/getSetting';
 import pruneInvites from '$lib/pruneInvites';
+import addSite from '$lib/addSite';
 
 export const actions = {
 	default: async ({ request, url, params }) => {
@@ -25,8 +26,7 @@ export const actions = {
 		}
 
 		try {
-			const numSites = await db.select({ count: count() }).from(sites);
-			await db.insert(sites).values({ link: link, order: numSites[0].count });
+			await addSite(link);
 
 			const inviteUses = await db
 				.select({ uses: invites.uses })
