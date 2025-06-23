@@ -3,11 +3,15 @@
 	import { enhance } from '$app/forms';
 </script>
 
+<svelte:head>
+	<title>Invite</title>
+</svelte:head>
+
 <h1 class="mt-4 text-2xl text-white underline">You've been invited to {data.webringName}!</h1>
 
 {#if form?.added === 'false'}
 	<h1 class="mt-2 text-white">
-		There was an error adding your site. Please try again or check with the owner of the webring.
+		There was an error adding your site: {form?.error} Please try again or check with the owner of the webring.
 	</h1>
 {:else}
 	<div class="mt-4 text-white">

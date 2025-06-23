@@ -36,9 +36,17 @@ export const actions = {
 			if (inviteUses[0].uses == 1) {
 				await db.delete(invites).where(eq(invites.code, params.invite));
 			}
-		} catch {
+		} catch (err: unknown) {
+			if (typeof err === 'object' && err !== null && 'body' in err) {
+				const errorBody = err.body as { message: string };
+				return {
+					added: 'false',
+					error: errorBody.message
+				};
+			}
 			return {
-				added: 'false'
+				added: 'false',
+				error: err instanceof Error ? err.message : String(err)
 			};
 		}
 		redirect(302, `/links?site=${link}`);
