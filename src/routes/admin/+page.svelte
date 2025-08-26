@@ -164,8 +164,8 @@
 					/>
 					Yes :(
 				</label>
-				<button class="mt-4 block cursor-pointer bg-blue-500 p-4 transition-colors duration-75"
-					>Update</button
+				<button class="mt-4 block cursor-pointer bg-blue-500 p-4 px-6 transition-colors duration-75"
+					>Save</button
 				>
 			</form>
 
@@ -239,14 +239,13 @@
 					};
 				}}
 			>
-
 				<span class="mt-2 mb-2 block font-bold">Site URL</span>
 
 				<label>
 					<input class="block w-xl text-black" type="url" name="site" required />
 				</label>
-				<button class="mt-4 block cursor-pointer bg-blue-500 p-4 transition-colors duration-75"
-					>Create</button
+				<button class="mt-4 block cursor-pointer bg-blue-500 p-4 px-6 transition-colors duration-75"
+					>Add</button
 				>
 			</form>
 
@@ -272,14 +271,12 @@
 							<tr class="transition-colors odd:bg-gray-600 even:bg-gray-500">
 								<td class="px-4 py-2">{invite.code}</td>
 								{#if invite.expiresAt === -1}
-									<td class="px-4 py-2">Never Expires</td>
+									<td class="px-4 py-2">{`Never Expires ${invite.uses === -1 ? '♾️' : ''}`}</td>
 								{:else}
-									<td class="px-4 py-2">{new Date(invite.expiresAt).toLocaleString()}</td>
+									<td class="px-4 py-2"
+										>{`${new Date(invite.expiresAt).toLocaleString()} ${invite.uses === -1 ? '♾️' : ''}`}</td
+									>
 								{/if}
-								<!-- <button
-										class="cursor-pointer font-bold underline transition-colors duration-75 hover:text-red-400"
-										onclick={async () => await deleteHelper(invite.id, 'invite')}>Delete</button
-									> -->
 								<td class="px-4 py-2"
 									><DeleteButton func={async () => await deleteHelper(invite.id, 'invite')} />
 								</td>
@@ -288,6 +285,8 @@
 					{/if}
 				</tbody>
 			</table>
+
+			<p class="text-md text">♾️ = Unlimited uses</p>
 
 			<p class="mt-4 text-xl underline">Create an Invite</p>
 

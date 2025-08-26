@@ -4,8 +4,6 @@ import { max } from 'drizzle-orm';
 import { error } from '@sveltejs/kit';
 
 export default async function addSite(siteURL: string) {
-	// TODO validate the site's URL and relevant stuff like that
-
 	let parsedURL;
 	try {
 		parsedURL = new URL(siteURL);
@@ -17,13 +15,15 @@ export default async function addSite(siteURL: string) {
 		error(400, { message: 'Invalid URL protocol. Goated webring only supports http and https.' });
 	}
 
+	const finalURL = `${parsedURL.protocol}//${parsedURL.host}`;
+
 	const [{ highestOrder }] = await db.select({ highestOrder: max(sites.order) }).from(sites);
 
 	if (highestOrder === null || highestOrder === undefined) {
 		// no sites exist, start with order 0
-		await db.insert(sites).values({ link: siteURL, order: 0 });
+		await db.insert(sites).values({ link: finalURL, order: 0 });
 	} else {
 		// add new site with order one higher than the current highest
-		await db.insert(sites).values({ link: siteURL, order: highestOrder + 1 });
+		await db.insert(sites).values({ link: finalURL, order: highestOrder + 1 });
 	}
 }

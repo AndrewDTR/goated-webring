@@ -20,7 +20,7 @@
 	{#each data.sites as site}
 		<a href={site.site} class="block">
 			<div
-				class="h-full w-full rounded-sm border-2 border-gray-500 bg-gray-300 p-6 text-center text-2xl transition-all duration-100 hover:bg-[#858d9f]"
+				class="h-full w-full rounded-sm border-2 border-gray-500 bg-gray-300 p-6 text-center text-2xl transition-all duration-50 hover:bg-[#afb7ca]"
 			>
 				<p>{new URL(site.site).host}</p>
 			</div>
@@ -30,7 +30,7 @@
 
 {#if data.hideWordmark.toLowerCase() != 'true'}
 	<a
-		class="fixed right-0 bottom-0 border-2 bg-white p-2 transition-all duration-100 hover:bg-[#959595]"
+		class="fixed right-0 bottom-0 border-2 bg-white p-2 transition-all duration-100 hover:bg-[#dfdfdf]"
 		href="https://github.com/AndrewDTR/goated-webring"
 	>
 		<p>🐐 made with goated webring</p>

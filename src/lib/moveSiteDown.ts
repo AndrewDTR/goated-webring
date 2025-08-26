@@ -23,7 +23,7 @@ export default async function moveSiteDown(siteID: number) {
 		return;
 	}
 
-	const [nextSite] = await db.select().from(sites).where(eq(sites.order, nextSiteOrder))
+	const [nextSite] = await db.select().from(sites).where(eq(sites.order, nextSiteOrder));
 
 	await db.batch([
 		db.update(sites).set({ order: -1 }).where(eq(sites.id, siteToMove.id)),

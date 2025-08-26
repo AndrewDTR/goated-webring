@@ -1,17 +1,16 @@
-import { eq } from 'drizzle-orm';
+import { and, lt, ne, or, lte } from 'drizzle-orm';
 import { db } from './server/db';
 import { invites } from './server/db/schema';
 
 export default async function pruneInvites() {
-	const allInvites = await db.select().from(invites);
-	const currentEpoch = Date.now();
+	const now = Date.now();
 
-	for (const invite of allInvites) {
-		// invite expires if it expires before right now
-		if (invite.expiresAt < currentEpoch) {
-			await db.delete(invites).where(eq(invites.id, invite.id));
-		}
-	}
-
-	return;
+	await db
+		.delete(invites)
+		.where(
+			or(
+				and(ne(invites.expiresAt, -1), lt(invites.expiresAt, now)),
+				and(ne(invites.uses, -1), lte(invites.uses, 0))
+			)
+		);
 }

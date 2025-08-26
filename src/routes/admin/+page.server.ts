@@ -9,7 +9,7 @@ import pruneInvites from '$lib/pruneInvites';
 import addSite from '$lib/addSite';
 
 export const actions = {
-	addSite: async ({request}) => {
+	addSite: async ({ request }) => {
 		const data = await request.formData();
 		const siteToAdd = String(data.get('site'));
 
