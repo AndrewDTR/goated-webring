@@ -8,18 +8,20 @@ import getSetting from '$lib/getSetting';
 export const load: PageServerLoad = async ({ url }) => {
 	// get redirect link from settings
 	const REDIRECT_LINK = await getSetting('REDIRECT_LINK');
+	const SHOW_LANDING_PAGE = await getSetting('SHOW_LANDING_PAGE');
+	const FALLBACK_REDIRECT = SHOW_LANDING_PAGE === 'true' ? '/' : REDIRECT_LINK;
 
 	// remove trailing slash
 	const currentSite = url.searchParams.get('site')?.replace(/\/$/, '');
 
 	if (currentSite == null) {
-		redirect(302, REDIRECT_LINK);
+		redirect(302, FALLBACK_REDIRECT);
 	}
 
 	try {
 		new URL(currentSite ?? '');
 	} catch {
-		redirect(302, REDIRECT_LINK);
+		redirect(302, FALLBACK_REDIRECT);
 	}
 
 	// get number of sites
@@ -32,13 +34,13 @@ export const load: PageServerLoad = async ({ url }) => {
 
 	// no sites found w/ that url
 	if (siteOrderObj.length === 0) {
-		redirect(302, REDIRECT_LINK);
+		redirect(302, FALLBACK_REDIRECT);
 	}
 
 	const siteOrder = siteOrderObj[0].order;
 
 	if (siteOrder == null || siteOrder < 0) {
-		redirect(302, REDIRECT_LINK);
+		redirect(302, FALLBACK_REDIRECT);
 	}
 
 	let redirectSite: { site: string }[];
