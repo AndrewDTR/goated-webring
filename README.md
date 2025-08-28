@@ -1,5 +1,5 @@
 # 🐐 goated webring
-this readme is TODO
+A simple, SvelteKit 
 
 ## Installation
 
@@ -41,4 +41,10 @@ flowchart LR
   C -->|next| A[Site 1]
 ```
 
-Members of the ring can link to the previous 
+Members of the ring can link to their neighbors by using the base link, the routes `next` and `prev`, and the query param `site` with their own URLs.
+
+That is, if a ring was being hosted on `https://ring.example.com/` and `https://person.one/` wanted to link to their neighbors, they would hyperlink `https://ring.example.com/prev?site=https://person.one` and `https://ring.example.com/next?site=https://person.one`.
+
+If you don't want to type those out by hand, these links are available at `https://ring.example.com/links?site=https://person.one`
+
+## Settings
