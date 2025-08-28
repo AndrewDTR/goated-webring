@@ -48,3 +48,9 @@ That is, if a ring was being hosted on `https://ring.example.com/` and `https://
 If you don't want to type those out by hand, these links are available at `https://ring.example.com/links?site=https://person.one`
 
 ## Settings
+
+`Webring Name` - The name of your webring, for branding purposes
+
+`Redirect Link` - If you have the redirect option set to **Redirect**, the base link (and any invalid URLs) will redirect here. If not, it'll redirect to a landing page with everyone's links in a grid.
+
+`Hide wordmark` - If you're using the landing page, this will get rid of a small icon at the bottom right saying "made with goated webring 🐐"
