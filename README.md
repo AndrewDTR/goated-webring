@@ -1,5 +1,5 @@
 # 🐐 goated webring
-A simple, SvelteKit 
+A simple, SvelteKit-based webring for ~~goats~~ linking to your friends' sites!  
 
 ## Installation
 
